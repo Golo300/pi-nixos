@@ -1,6 +1,6 @@
 { pkgs, lib, ... }:
 let
-  ssh-key = "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIPsnp3qCYwCpb49UptuZ8csHzIZzZr0Buyl7uVW9udFdAAAABHNzaDo=";
+  ssh-key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOb9qR65i6UTSF92nnOYZZ3zxRyIxv9ApS702G01mabG Tim.lanzinger@gmx.de";
 in
 {
   # NixOS wants to enable GRUB by default
@@ -22,7 +22,7 @@ in
   # !!! Needed for the virtual console to work on the RPi 3, as the default of 16M doesn't seem to be enough.
   # If X.org behaves weirdly (I only saw the cursor) then try increasing this to 256M.
   # On a Raspberry Pi 4 with 4 GB, you should either disable this parameter or increase to at least 64M if you want the USB ports to work.
-  boot.kernelParams = [ "cma=256M" ];
+  #boot.kernelParams = [ "cma=256M" ];
 
   # File systems configuration for using the installer's partition layout
   fileSystems = {
@@ -48,7 +48,7 @@ in
     openFirewall = true;
 
     /* allow root login for remote deploy aka. rebuild-switch  */
-    settings.AllowUsers = [ "ruben" "root" ];
+    settings.AllowUsers = [ "timl" "root" ];
     settings.PermitRootLogin = "yes";
 
     /* require public key authentication for better security */
@@ -67,16 +67,7 @@ in
     firewall.enable = false;
 
     # useDHCP = true;
-    interfaces.wlan0 = {
-      useDHCP = false;
-      ipv4.addresses = [{
-        # I used static IP over WLAN because I want to use it as local DNS resolver
-        address = "192.168.1.4";
-        prefixLength = 24;
-      }];
-    };
     interfaces.eth0 = {
-      useDHCP = true;
       # I used DHCP because sometimes I disconnect the LAN cable
       #ipv4.addresses = [{
       #  address = "192.168.100.3";
@@ -107,23 +98,23 @@ in
 
   users.mutableUsers = true;
   users.groups = {
-    ruben = {
+    timl = {
       gid = 1000;
-      name = "ruben";
+      name = "timl";
     };
   };
   users.users = {
-    ruben = {
+    timl = {
       uid = 1000;
-      home = "/home/ruben";
+      home = "/home/timl";
       isNormalUser = true;
-      name = "ruben";
-      group = "ruben";
+      name = "timl";
+      group = "timl";
       extraGroups = [ "wheel" ];
     };
   };
   users.users.root.openssh.authorizedKeys.keys = [ ssh-key ];
-  users.users.ruben.openssh.authorizedKeys.keys = [ ssh-key ];
+  users.users.timl.openssh.authorizedKeys.keys = [ ssh-key ];
 
   system.stateVersion = "23.05";
 }
